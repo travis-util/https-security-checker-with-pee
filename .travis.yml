@@ -59,6 +59,6 @@ script:
   curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@composer.lock | pee 'grep "No known\* vulnerabilities detected." > /dev/null' cat
 
 - |
-  (!
-  curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@../composer.lock | pee 'grep "No known\* vulnerabilities detected." > /dev/null' cat
+  (
+  curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@../composer.lock | pee '! grep "No known\* vulnerabilities detected." > /dev/null' cat
   )
