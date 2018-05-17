@@ -49,6 +49,7 @@ install:
 - |
   install --directory negative
   cd negative
+  composer init
   composer require symfony/http-foundation
 
 
