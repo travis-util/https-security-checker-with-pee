@@ -1,0 +1,63 @@
+---
+language: php
+
+addons:
+  apt:
+    packages:
+    # - colordiff
+    # - elinks # For dysplaying php files on console.
+    - moreutils # pee
+
+cache:
+  directories:
+  - $HOME/.composer/cache/files
+
+# php:
+# - nightly
+# - 7.2
+# - 7.1
+# - 7.0
+
+# env:
+  # global:
+  # - COMPOSER_BIN_DIR=bin
+  # - COMPOSER=composer-dev.json # https://travis-ci.org/symfony-flex-demo/env-COMPOSER-and-symfony.lock
+  # - PATH=$TRAVIS_BUILD_DIR/bin::$PATH
+
+# matrix:
+  # fast_finish: true
+  # allow_failures:
+  # - php: nightly
+
+
+before_install:
+# - go get -u github.com/jingweno/ccat
+# - pip install --user pygments
+# Disabling Xdebug - Debugger and Profiler Tool for PHP
+- |
+  php -r "print_r(get_loaded_extensions(TRUE));"
+  if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
+    cat ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
+    install --directory ~/.phpenv/versions/$(phpenv version-name)/etc/on-demand
+    mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ~/.phpenv/versions/$(phpenv version-name)/etc/on-demand
+    php -r "print_r(get_loaded_extensions(TRUE));"
+  fi
+
+
+install:
+- composer require symfony/form:3.3.12
+- |
+  install --directory negative
+  cd negative
+  composer require symfony/http-foundation
+
+
+script:
+# This checks that the application doesn't use dependencies with known security vulnerabilities
+- |
+  curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@composer.lock | pee 'grep "No known\* vulnerabilities detected." > /dev/null' cat
+
+- |
+  (!
+  curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@../composer.lock | pee 'grep "No known\* vulnerabilities detected." > /dev/null' cat
+  )
