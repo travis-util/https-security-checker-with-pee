@@ -4,35 +4,14 @@ language: php
 addons:
   apt:
     packages:
-    # - colordiff
-    # - elinks # For dysplaying php files on console.
     - moreutils # pee
 
 cache:
   directories:
   - $HOME/.composer/cache/files
 
-# php:
-# - nightly
-# - 7.2
-# - 7.1
-# - 7.0
-
-# env:
-  # global:
-  # - COMPOSER_BIN_DIR=bin
-  # - COMPOSER=composer-dev.json # https://travis-ci.org/symfony-flex-demo/env-COMPOSER-and-symfony.lock
-  # - PATH=$TRAVIS_BUILD_DIR/bin::$PATH
-
-# matrix:
-  # fast_finish: true
-  # allow_failures:
-  # - php: nightly
-
 
 before_install:
-# - go get -u github.com/jingweno/ccat
-# - pip install --user pygments
 # Disabling Xdebug - Debugger and Profiler Tool for PHP
 - |
   php -r "print_r(get_loaded_extensions(TRUE));"
@@ -59,6 +38,5 @@ script:
   curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@composer.lock | pee 'grep "No known\* vulnerabilities detected." > /dev/null' cat
 
 - |
-  (
   curl -H "Accept: text/plain" https://security.sensiolabs.org/check_lock -F lock=@../composer.lock | pee '! grep "No known\* vulnerabilities detected." > /dev/null' cat
-  )
+  # With a negation to succeed when security vulnerabilities are found.
